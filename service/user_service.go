@@ -50,6 +50,7 @@ func (s *userService) Register(user *model.User) (*model.User, error) {
 	}
 
 	user.PasswordHash = passHash
+	user.IsAdmin = false
 
 	err = s.userRepository.Create(user)
 	if err != nil {
