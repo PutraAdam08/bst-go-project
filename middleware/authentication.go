@@ -11,7 +11,7 @@ import (
 
 type JWTService interface {
 	ValidateToken(token string) (*jwt.Token, error)
-	GetUserIDByToken(token string) (uint, error)
+	GetUserByTokenID(token string) (uint, error)
 }
 
 func Authenticate(jwtService JWTService) gin.HandlerFunc {
@@ -43,7 +43,7 @@ func Authenticate(jwtService JWTService) gin.HandlerFunc {
 			})
 		}
 
-		userID, err := jwtService.GetUserIDByToken(authHeader)
+		userID, err := jwtService.GetUserByTokenID(authHeader)
 		ctx.Set("user_id", userID)
 		ctx.Next()
 	}

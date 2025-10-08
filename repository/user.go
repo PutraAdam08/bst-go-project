@@ -18,7 +18,7 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	}
 }
 
-func (usr *UserRepository) GetById(id uint) (*model.User, error) {
+func (usr *UserRepository) GetByID(id uint) (*model.User, error) {
 	var user model.User
 	tx := usr.db.Where("id = ?", id).First(&user)
 	if tx.Error != nil {
