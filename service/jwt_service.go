@@ -34,9 +34,9 @@ func getSecretKey() string {
 	return secretKey
 }
 
-func (j *jwtService) GenerateToken(UserID int) (string, error) {
+func (j *jwtService) GenerateToken(UserID uint) (string, error) {
 	claims := &jwtCustomClaim{
-		strconv.Itoa(UserID),
+		strconv.Itoa(int(UserID)),
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 15)),
 			Issuer:    j.issuer,
@@ -63,7 +63,7 @@ func (j *jwtService) ValidateToken(token string) (*jwt.Token, error) {
 	})
 }
 
-func (j *jwtService) GetUserIDByToken(token string) (int, error) {
+func (j *jwtService) GetUserByTokenID(token string) (uint, error) {
 	tToken, err := j.ValidateToken(token)
 	if err != nil {
 		return 0, err
@@ -77,5 +77,5 @@ func (j *jwtService) GetUserIDByToken(token string) (int, error) {
 		return 0, err
 	}
 
-	return id, nil
+	return uint(id), nil
 }

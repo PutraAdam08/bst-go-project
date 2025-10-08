@@ -15,6 +15,7 @@ import (
 type UserService interface {
 	Register(user *model.User) (*model.User, error)
 	Login(user *model.User) (string, error)
+	AdminLogin(user *model.User) (string, error)
 	GetByID(id uint) (*model.User, error)
 	Update(user *model.User) (*model.User, error)
 }
@@ -58,6 +59,41 @@ func (c *UserController) Register(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, apix.HTTPResponse{
 		Message: "succesfully created user",
+		Data:    res,
+	})
+}
+
+func (c *UserController) AdminLogin(ctx *gin.Context) {
+	var loginDTO dto.LoginUserDTO
+	err := ctx.ShouldBindJSON(&loginDTO)
+	if err != nil {
+		ve, _ := validatorx.ParseValidatorErrors(err)
+		ctx.JSON(http.StatusBadRequest, apix.HTTPResponse{
+			Message: "input data invalid",
+			Data:    ve,
+		})
+
+		return
+	}
+
+	user := model.User{
+		Email:    loginDTO.Email,
+		Password: loginDTO.Password,
+	}
+
+	res, err := c.userService.AdminLogin(&user)
+	fmt.Println(err)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, apix.HTTPResponse{
+			Message: "failed to login",
+			Data:    err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, apix.HTTPResponse{
+		Message: "successfully logged in",
 		Data:    res,
 	})
 }
