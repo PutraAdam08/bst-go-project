@@ -18,7 +18,7 @@ type BookingService interface {
 	Create(booking *model.Booking) error
 	Update(booking *model.Booking) error
 	Delete(id uint) error
-	UpdateBookingStatus(id uint, status int) error
+	UpdateBookingStatus(userId uint, id uint, status int) error
 }
 
 type BookingController struct {
@@ -249,7 +249,8 @@ func (c *BookingController) UpdateBookingStatus(ctx *gin.Context) {
 		return
 	}
 
-	err = c.bookingService.UpdateBookingStatus(id, status)
+	userID := ctx.GetInt("user_id")
+	err = c.bookingService.UpdateBookingStatus(uint(userID), id, status)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, apix.HTTPResponse{
 			Message: "failed to update booking status",

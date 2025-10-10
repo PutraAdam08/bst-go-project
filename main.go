@@ -51,7 +51,7 @@ func main() {
 
 	// Booking module setup
 	bookingRepo := repository.NewBookingRepository(dbConn)
-	bookingSvc := service.NewBookingService(bookingRepo)
+	bookingSvc := service.NewBookingService(bookingRepo, userRepo)
 	bookingCtrl := controller.NewBookingController(bookingSvc)
 
 	roomRepo := repository.NewRoomRepository(dbConn)

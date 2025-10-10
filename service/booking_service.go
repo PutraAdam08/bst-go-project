@@ -18,11 +18,13 @@ type BookingRepository interface {
 type bookingService struct {
 	jwtService        JWTService
 	bookingRepository BookingRepository
+	userRepository    UserRepository
 }
 
-func NewBookingService(bookingRepository BookingRepository) *bookingService {
+func NewBookingService(bookingRepository BookingRepository, userRepository UserRepository) *bookingService {
 	return &bookingService{
 		bookingRepository: bookingRepository,
+		userRepository:    userRepository,
 	}
 }
 
@@ -84,7 +86,13 @@ func (s *bookingService) IsRoomAvailable(roomID uint, start, end time.Time) (boo
 	return true, nil
 }
 
-func (s *bookingService) UpdateBookingStatus(id uint, status int) error {
+func (s *bookingService) UpdateBookingStatus(userId uint, id uint, status int) error {
+	// check if user is admin
+	user, err := s.userRepository.GetByID(userId)
+	if !user.IsAdmin {
+		return errors.New("only admin can update status")
+	}
+
 	booking, err := s.bookingRepository.GetById(id)
 	if err != nil {
 		return err
