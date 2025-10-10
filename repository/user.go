@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 
 	"BSTproject.com/model"
@@ -31,28 +32,27 @@ func (usr *UserRepository) GetByID(id uint) (*model.User, error) {
 func (usr *UserRepository) GetByEmail(email string) (*model.User, error) {
 	var user model.User
 	tx := usr.db.Where("email = ?", email).First(&user)
-	if tx.Error != nil && tx.Error != gorm.ErrRecordNotFound {
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		fmt.Printf("[GetByEmail] error: %s", tx.Error)
 		return nil, tx.Error
-	}
-	if tx.Error != gorm.ErrRecordNotFound {
-		return nil, nil
 	}
 
 	return &user, nil
 }
 
 func (usr *UserRepository) Create(user *model.User) error {
-	fmt.Println(&user)
-	tx := usr.db.Create(&user)
+	tx := usr.db.Create(user)
 	if tx.Error != nil {
 		return tx.Error
 	}
-
 	return nil
 }
 
 func (usr *UserRepository) Update(user *model.User) error {
-	tx := usr.db.Where("id = ?", user.ID).Updates(user)
+	tx := usr.db.Where("id = ?", user.Id).Updates(user)
 	if tx.Error != nil {
 		return tx.Error
 	}

@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"gorm.io/gorm/logger"
 	"log"
 	"os"
 
@@ -24,7 +25,7 @@ func DBconnect() *gorm.DB {
 
 	dsn := username + ":" + password + "@tcp(" + host + ":" + port + ")/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
 	if err != nil {
 		fmt.Println("error initiating database : ", err)
 		os.Exit(1)

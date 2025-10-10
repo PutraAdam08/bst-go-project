@@ -2,6 +2,9 @@ package service
 
 import (
 	"errors"
+	"github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 
 	"BSTproject.com/model"
 	"BSTproject.com/utils/auth"
@@ -36,7 +39,7 @@ func NewUserService(jwtService JWTService, userRepository UserRepository) *userS
 
 func (s *userService) Register(user *model.User) (*model.User, error) {
 	existing, err := s.userRepository.GetByEmail(user.Email)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
@@ -44,12 +47,13 @@ func (s *userService) Register(user *model.User) (*model.User, error) {
 		return nil, errors.New("user with this email has already exist")
 	}
 
-	passHash, err := auth.HashAndSalt(user.Password)
+	passHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
+		logrus.Info("[Register, GenerateFromPassword] error: ", err)
 		return nil, err
 	}
 
-	user.PasswordHash = passHash
+	user.Password = string(passHash)
 	user.IsAdmin = false
 
 	err = s.userRepository.Create(user)
@@ -79,7 +83,7 @@ func (s *userService) Login(user *model.User) (string, error) {
 		return "", errors.New("password does not match")
 	}
 
-	token, err := s.jwtService.GenerateToken(existing.ID)
+	token, err := s.jwtService.GenerateToken(existing.Id)
 	if err != nil {
 		return "", err
 	}
@@ -93,12 +97,12 @@ func (s *userService) AdminLogin(user *model.User) (string, error) {
 		return "", err
 	}
 
-	if !existing.IsAdmin {
-		return "", errors.New("user is not admin")
-	}
-
 	if existing == nil {
 		return "", errors.New("user does not exist")
+	}
+
+	if !existing.IsAdmin {
+		return "", errors.New("user is not admin")
 	}
 
 	res, err := auth.ComparePassword(existing.Password, []byte(user.Password))
@@ -110,7 +114,7 @@ func (s *userService) AdminLogin(user *model.User) (string, error) {
 		return "", errors.New("password does not match")
 	}
 
-	token, err := s.jwtService.GenerateToken(existing.ID)
+	token, err := s.jwtService.GenerateToken(existing.Id)
 	if err != nil {
 		return "", err
 	}
@@ -123,12 +127,13 @@ func (s *userService) GetByID(id uint) (*model.User, error) {
 }
 
 func (s *userService) Update(user *model.User) (*model.User, error) {
-	passHash, err := auth.HashAndSalt(user.Password)
+	passHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
+		logrus.Info("[Update, GenerateFromPassword] error: ", err)
 		return nil, err
 	}
 
-	user.PasswordHash = passHash
+	user.Password = string(passHash)
 
 	err = s.userRepository.Update(user)
 

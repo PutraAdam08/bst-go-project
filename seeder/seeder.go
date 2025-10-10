@@ -24,16 +24,16 @@ func main() {
 
 	var users []model.User
 	users = append(users, model.User{
-		Name:         "Admin1",
-		PasswordHash: pwdHash,
-		Email:        "admin1@gmail.com",
-		IsAdmin:      true,
+		Name:     "Admin1",
+		Password: pwdHash,
+		Email:    "admin1@gmail.com",
+		IsAdmin:  true,
 	})
 	users = append(users, model.User{
-		Name:         "Budi",
-		PasswordHash: pwdHash,
-		Email:        "budi@gmail.com",
-		IsAdmin:      false,
+		Name:     "Budi",
+		Password: pwdHash,
+		Email:    "budi@gmail.com",
+		IsAdmin:  false,
 	})
 
 	db.Create(&users)

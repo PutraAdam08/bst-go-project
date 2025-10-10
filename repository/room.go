@@ -32,7 +32,7 @@ func (r *RoomRepository) GetById(id uint) (*model.Room, error) {
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
-
+	//TEST UPDATE
 	return room, nil
 }
 
@@ -47,7 +47,7 @@ func (r *RoomRepository) Create(room *model.Room) error {
 }
 
 func (r *RoomRepository) Update(room *model.Room) error {
-	tx := r.db.Where("id = ?", room.ID).Updates(room)
+	tx := r.db.Where("id = ?", room.Id).Updates(room)
 	if tx.Error != nil {
 		return tx.Error
 	}

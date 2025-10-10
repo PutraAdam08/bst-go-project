@@ -11,6 +11,5 @@ func AdminRoutes(router *gin.Engine, userController *controller.UserController, 
 	userRoutes := router.Group("/admin")
 	{
 		userRoutes.POST("/login", userController.AdminLogin)
-		userRoutes.GET("", middleware.Authenticate(jwtService), userController.GetUser)
 	}
 }
