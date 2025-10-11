@@ -1,0 +1,387 @@
+basePath: /v2
+definitions:
+  dto.CreateBookingDTO:
+    properties:
+      room_id:
+        type: integer
+      status:
+        type: integer
+      time_end:
+        type: string
+      time_start:
+        type: string
+    required:
+    - room_id
+    - status
+    - time_end
+    - time_start
+    type: object
+  dto.CreateRoomDTO:
+    properties:
+      capacity:
+        type: integer
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - capacity
+    - description
+    - name
+    type: object
+  dto.LoginUserDTO:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.RegisterUserDTO:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  dto.UpdateBookingDTO:
+    properties:
+      room_id:
+        type: integer
+      status:
+        type: integer
+      time_end:
+        type: string
+      time_start:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.UpdateRoomDTO:
+    properties:
+      capacity:
+        type: integer
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /admin/login:
+    post:
+      consumes:
+      - application/json
+      description: AdminLogin
+      parameters:
+      - description: Form AdminLogin
+        in: body
+        name: List
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginUserDTO'
+      produces:
+      - application/json
+      responses: {}
+      summary: AdminLogin
+      tags:
+      - admin
+  /bookings:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all bookings
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: Get all bookings
+      tags:
+      - booking
+    post:
+      consumes:
+      - application/json
+      description: Create a new booking
+      parameters:
+      - description: Booking Data
+        in: body
+        name: Booking
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateBookingDTO'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: Create booking
+      tags:
+      - booking
+  /bookings/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a booking by ID
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: Delete booking
+      tags:
+      - booking
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a single booking by its ID
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: Get booking by ID
+      tags:
+      - booking
+    put:
+      consumes:
+      - application/json
+      description: Update an existing booking
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Booking Data
+        in: body
+        name: Booking
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateBookingDTO'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: Update booking
+      tags:
+      - booking
+  /bookings/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Update a booking’s status (0=pending, 1=approved, 2=rejected, 3=cancelled)
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New Status
+        in: query
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: Approve or Reject a booking
+      tags:
+      - booking
+  /rooms:
+    get:
+      description: Retrieve all room data
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: Get all rooms
+      tags:
+      - room
+    post:
+      consumes:
+      - application/json
+      description: Add a new room
+      parameters:
+      - description: Room data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateRoomDTO'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: Create room
+      tags:
+      - room
+  /rooms/{id}:
+    delete:
+      description: Delete a room by ID
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: Delete room
+      tags:
+      - room
+    get:
+      description: Retrieve a specific room by ID
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: Get room by ID
+      tags:
+      - room
+    put:
+      consumes:
+      - application/json
+      description: Update a room by ID
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Room
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRoomDTO'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: Update room
+      tags:
+      - room
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: GetUser
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: GetUser
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: UpdateUser
+      parameters:
+      - description: Form UpdateUser
+        in: body
+        name: List
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterUserDTO'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerToken: []
+      summary: UpdateUser
+      tags:
+      - user
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Login
+      parameters:
+      - description: Form Login
+        in: body
+        name: List
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginUserDTO'
+      produces:
+      - application/json
+      responses: {}
+      summary: Login
+      tags:
+      - user
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register
+      parameters:
+      - description: Form Register
+        in: body
+        name: List
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterUserDTO'
+      produces:
+      - application/json
+      responses: {}
+      summary: Register
+      tags:
+      - user
+securityDefinitions:
+  BearerToken:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

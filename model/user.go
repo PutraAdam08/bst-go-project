@@ -3,12 +3,11 @@ package model
 import "time"
 
 type User struct {
-	ID           uint      `json:"id"`
-	Name         string    `json:"name"`
-	Email        string    `json:"email"`
-	Password     string    `json:"-" gorm:"-"`
-	PasswordHash string    `json:"-"`
-	IsAdmin      bool      `json:"-"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	Id        uint      `json:"id" gorm:"primary_key:auto_increment"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Password  string    `json:"password"`
+	IsAdmin   bool      `json:"is_admin"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

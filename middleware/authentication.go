@@ -19,32 +19,35 @@ func Authenticate(jwtService JWTService) gin.HandlerFunc {
 		authHeader := ctx.GetHeader("Authorization")
 		if authHeader == "" {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, apix.HTTPResponse{
-				Message: "invalid auth header",
+				Message: "Missing Authorization header",
 				Data:    nil,
 			})
-
 			return
 		}
 
-		authHeader = strings.Replace(authHeader, "Bearer", "", -1)
-		token, err := jwtService.ValidateToken(authHeader)
+		// ✅ Properly trim "Bearer " prefix and any extra spaces
+		tokenString := strings.TrimSpace(strings.TrimPrefix(authHeader, "Bearer "))
+
+		token, err := jwtService.ValidateToken(tokenString)
+		if err != nil || !token.Valid {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, apix.HTTPResponse{
+				Message: "Invalid or expired token",
+				Data:    nil,
+			})
+			return
+		}
+
+		// ✅ Extract user ID from the token
+		userID, err := jwtService.GetUserByTokenID(tokenString)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, apix.HTTPResponse{
-				Message: "invalid token",
+				Message: "Invalid token payload",
 				Data:    nil,
 			})
 			return
 		}
 
-		if !token.Valid {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, apix.HTTPResponse{
-				Message: "invalid token",
-				Data:    nil,
-			})
-		}
-
-		userID, err := jwtService.GetUserByTokenID(authHeader)
-		ctx.Set("user_id", userID)
+		ctx.Set("user_id", int(userID))
 		ctx.Next()
 	}
 }
